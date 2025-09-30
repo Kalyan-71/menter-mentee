@@ -1,0 +1,11 @@
+{
+  "name": "menter-mentee-backend",
+  "version": "1.0.0",
+  "description": "This is the backend for the menter-mentee project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "pothuganti kalyan kumar",
+  "license": "ISC"
+}
