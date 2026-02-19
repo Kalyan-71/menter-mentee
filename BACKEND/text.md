@@ -40,4 +40,8 @@ git push -u origin main
 - create model ans its function... (jwt , bcrypt)
 - file upload cloud and local multer middle ware , cloudinary
 - user controllers
-- 
+
+
+routes
+
+https://localhost:8000.com//api/v1/users

@@ -26,13 +26,11 @@ const userSchema = new mongoose.Schema(
             trim:true,
             index:true
         },
-        // avatar:{
-        //     type:String,//cloudinary url
-        //     required:true
-        // },
-        // coverImage:{
-        //     type:String,//cloudinary url
-        // },
+        role:{
+            type:String,
+            required:true,
+            enum:["mentor" , "mentee"],
+        },
         password:{
             type:String,
             required:[true,'Password is required']
