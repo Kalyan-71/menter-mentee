@@ -35,9 +35,9 @@ const userSchema = new mongoose.Schema(
             type:String,
             required:[true,'Password is required']
         },
-        refreshToken:{
-            type:String
-        }
+        // refreshToken:{
+        //     type:String
+        // }
     },
     {
     timestamps:true
@@ -57,31 +57,29 @@ userSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password , this.password)
 }
 
-userSchema.methods.generateAccessToken = function(){   ////jwt.sign(payload, secret, options)  pay;oad means data
+userSchema.methods.generateAccessToken = function(){   ////jwt.sign(payload, secret, options)  payload means data
       return jwt.sign(
         {
             _id: this._id,
             email: this.email,
             username: this.username,
-            fullname: this.fullname
+            fullname: this.fullname,
+            role:this.role,
         },
         process.env.ACCESS_TOKEN_SECRET,
-        {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRY
-        }
     )
 }
 
-userSchema.methods.generateRefreshToken = function(){
-    return jwt.sign(
-        {
-            _id: this._id,
-        },
-        process.env.REFRESH_TOKEN_SECRET,
-        {
-            expiresIn:process.env.REFRESH_TOKEN_EXPIRY,
-        }
-    )
-}
+// userSchema.methods.generateRefreshToken = function(){
+//     return jwt.sign(
+//         {
+//             _id: this._id,
+//         },
+//         process.env.REFRESH_TOKEN_SECRET,
+//         {
+//             expiresIn:process.env.REFRESH_TOKEN_EXPIRY,
+//         }
+//     )
+// }
 
 export const User = mongoose.model("User" , userSchema)

@@ -7,24 +7,6 @@ import  jwt  from "jsonwebtoken";
 
 import mongoose from "mongoose"
 
-const generateAccessTokenAndRefreshTokens = async(userId) => {
-    try{
-        const user = await User.findById(userId)
-       const accessToken = await user.generateAccessToken()
-       const refreshToken = await user.generateRefreshToken()
-        // console.log(accessToken)
-
-       user.refreshToken = refreshToken
-       user.save({validateBeforeSave:false})
-       //if you are only updating one field (like a token) and don’t want to run all validations 
-       // (e.g., required fields, length checks), skipping validation makes the save faster and avoids validation errors.
-
-       return {accessToken , refreshToken}
-    }
-    catch(error){
-        throw new ApiError(500 , "Something went wrong while generating refresh and acess token")
-    }
-}
 
 const registerUser = asyncHandler( async (req,res)=>{
 
@@ -109,27 +91,28 @@ const loginUser = asyncHandler(async (req, res)=>{
         console.log("ERROR: Invalid user credentials")
         return res.status(401).json(new ApiResponse(401 , null , "Invalid user credentials"))
     }
-
-    const {accessToken , refreshToken} = await generateAccessTokenAndRefreshTokens(user._id)
-
-    const loggedInUser = await User.findById(user.id).select("-password -refreshToken")
+    
+     const newUser = await User.findById(user._id);
+    const JWTToken = await newUser.generateAccessToken();
+    const loggedInUser = await User.findById(user.id).select("-password")
     
     const options = {
         httpOnly: true,
-        secure: true
+        // secure: true,
+        // sameSite: "none"  /////production if needed 
+        secure: process.env.SECURE,
+
     }
 
     return res
     .status(200)
-    .cookie("accessToken" , accessToken , options)
-    .cookie("refreshToken" , refreshToken , options)
+    .cookie("JWTToken" , JWTToken , options)
     .json(
         new ApiResponse(
             200,
             {
                 user:loggedInUser ,
-                accessToken,
-                refreshToken
+                JWTToken,
             },
             "User logged In Successfully"
         )
@@ -138,41 +121,27 @@ const loginUser = asyncHandler(async (req, res)=>{
 
 
 
-
-
-
-
-
-
-
-
-
 const logoutUser = asyncHandler(async (req , res)=>{
-   await User.findByIdAndUpdate(
-        req.user?._id,
-        {
-            $set:{
-                // refereshToken:undefined,
-                refreshToken:1
-            },
-        },
-        {
-            new:true,//return updated data
-        }
-        
-    )
-
     const options = {
         httpOnly:true,
-        secure:true,
+        // secure:true,
+        // sameSite: "none"
+        secure: process.env.SECURE,
     }
 
     return res
     .status(200)
-    .clearCookie("accessToken" , options)
-    .clearCookie("refreshToken" , options)
-    .json(new ApiError(200 , {} , "User logged Out"))
+    .clearCookie("JWTToken" , options)
+    .json(new ApiResponse(200 , {} , "User logged Out"))
 })
+
+
+
+
+
+
+
+
 
 const refreshAccessToken = asyncHandler(async (req , res) => {
     const incomingRefreshToken = req.cookies?.refreshToken || req.body?.refreshToken
