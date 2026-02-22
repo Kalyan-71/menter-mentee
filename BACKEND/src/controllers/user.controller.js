@@ -99,7 +99,7 @@ const loginUser = asyncHandler(async (req, res)=>{
     const options = {
         httpOnly: true,
         // secure: true,
-        // sameSite: "none"  /////production if needed 
+        sameSite: "none",  /////production if needed 
         secure: process.env.SECURE,
 
     }
@@ -125,7 +125,7 @@ const logoutUser = asyncHandler(async (req , res)=>{
     const options = {
         httpOnly:true,
         // secure:true,
-        // sameSite: "none"
+        sameSite: "none",
         secure: process.env.SECURE,
     }
 
