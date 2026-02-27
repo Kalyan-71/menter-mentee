@@ -26,6 +26,11 @@ import userRouter from "./routes/user.routes.js"
 app.use("/api/v1/users",userRouter)
 
 
+////goals router import
+import goalsTrackerRouter from "./routes/goals-tracker.routes.js"
+
+app.use("/api/v1/goalsTracker" , goalsTrackerRouter)
+
 
 ///http://localhost:8000/api/v1/users/register
 export { app };
