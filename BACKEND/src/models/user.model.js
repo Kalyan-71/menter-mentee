@@ -38,6 +38,15 @@ const userSchema = new mongoose.Schema(
         // refreshToken:{
         //     type:String
         // }
+
+        isProfileComplete:{
+            type:Boolean,
+            default:true,
+        },
+        isFirstLogin:{
+            type:Boolean,
+            default:true
+        },
     },
     {
     timestamps:true

@@ -4,6 +4,7 @@ import { User  } from "../models/user.model.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import  jwt  from "jsonwebtoken";
+import { Profile } from "../models/profile.model.js"
 
 import mongoose from "mongoose"
 
@@ -41,10 +42,12 @@ const registerUser = asyncHandler( async (req,res)=>{
             username:username.toLowerCase()
         })
 
-
+        await Profile.create({
+            user: user._id
+        })
 
         const createdUser = await User.findById(user._id).select(
-            "-password -refreshToken"
+            "-password "
         )
 
         if(!createdUser){
@@ -104,6 +107,11 @@ const loginUser = asyncHandler(async (req, res)=>{
 
     }
 
+        const redirectUrl = user.isProfileComplete 
+        ? (user.role === 'mentor' ? '../dashboard/mentor-dashboard/mentor-dashboard.html' : '../dashboard/mentee-dashboard/mentee-dashboard.html')
+        : '../profile/profile.html';
+
+
     return res
     .status(200)
     .cookie("JWTToken" , JWTToken , options)
@@ -113,6 +121,9 @@ const loginUser = asyncHandler(async (req, res)=>{
             {
                 user:loggedInUser ,
                 JWTToken,
+                redirectUrl,
+                isProfileComplete: user.isProfileComplete,
+                isFirstLogin: user.isFirstLogin
             },
             "User logged In Successfully"
         )
